@@ -1,0 +1,42 @@
+/* RESET */
+body,
+body * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ma Style */
+body {
+  background-color: #012;
+  padding-top: 5em;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.2em;
+}
+
+.what-you-say,
+.what-you-said {
+  background-color: #fff;
+  margin: 0.5em auto;
+  padding: 1em;
+  width: 50%;
+  border-radius: 0.5em;
+}
+
+.what-you-said {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.what-you-say input {
+  border: none;
+  width: 100%;
+  font-size: 1em;
+  outline: none;
+}
+
+.what-you-say input,
+.what-you-said p {
+  border-bottom: 1px solid #888;
+}
