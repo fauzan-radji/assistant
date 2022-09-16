@@ -22,11 +22,11 @@ const greetings = [
 ];
 
 const responses = [
-  "ada apakah gerangan memanggil saya?",
+  // "ada apakah gerangan memanggil saya?",
   "perihal apa yang membuat panjenengan memanggil saya?",
-  "ngapa bang?",
-  "iya kenapa?",
-  "apa cuy?",
+  // "ngapa bang?",
+  // "iya kenapa?",
+  // "apa cuy?",
   // "nani deska?",
   // "NGAPA LU BANGSAT!!",
   // "NGAPA LU ANJING!!",
