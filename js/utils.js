@@ -1,24 +1,33 @@
 /* UTILITY FUNCTIONS */
 let cities;
-(async () => {
-  cities = await fetchJSON(location.href + "json/wilayah.json");
-})();
+fetchJSON(location.href + "json/wilayah.json").then(
+  (response) => (cities = response)
+);
 
-function addText(text) {
-  const firstChild = whatYouSaid.children[0];
+function addText(text, whoIsTalking) {
   const newParagraph = document.createElement("p");
   newParagraph.textContent = text;
+  newParagraph.classList.add(whoIsTalking);
 
-  whatYouSaid.insertBefore(newParagraph, firstChild);
+  textBox.appendChild(newParagraph);
+  newParagraph.scrollIntoView();
 }
 
 function updateText(text) {
-  input.value = text;
+  whatIAmSaying.textContent = text;
 }
 
 function speak(text) {
-  addText(text);
   const utterance = new SpeechSynthesisUtterance(text);
+  utterance.onstart = () => {
+    recognition.stop();
+    console.log("stop recognition and start speaking");
+    addText(text, "assistant");
+  };
+  utterance.onend = () => {
+    recognition.start();
+    console.log("start recognition and stop speaking");
+  };
   synth.speak(utterance);
 }
 
@@ -73,14 +82,22 @@ function tellTheDate() {
 }
 
 async function definisi(kata) {
+  speak("Bentar cuy, gua googling dulu.");
   const base_url = "https://new-kbbi-api.herokuapp.com/cari/" + kata;
   let response = await fetchJSON(base_url);
+  console.log(response);
+  if (!response.status) {
+    speak("Ga dapet cuy. Aowkaokawok.");
+    speak(response.message);
+    return;
+  }
   const deskripsi = response.data[0].arti.map((e) => e.deskripsi);
 
   for (let i = 0; i < deskripsi.length; i++) {
     const kalimat = deskripsi[i].replace(/--/g, kata);
     speak(`${i + 1}. ${kalimat}`);
   }
+  speak("Itu aja cuy.");
 }
 
 async function getWeather(city) {
@@ -90,6 +107,8 @@ async function getWeather(city) {
     );
     return;
   }
+
+  speak("Bentar cuy, gua cari dulu.");
 
   const wilayah = cities.find((kota) => {
     return [
@@ -123,10 +142,15 @@ async function getWeather(city) {
 
       speak(kalimat);
     }
+
+    speak("Itu aja cuy");
   }
 }
 
 async function fetchJSON(url) {
-  const response = await fetch(url);
-  return await response.json();
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => resolve(response.json()))
+      .catch(reject);
+  });
 }

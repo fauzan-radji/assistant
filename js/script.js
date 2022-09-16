@@ -1,6 +1,9 @@
-const input = document.getElementById("input");
-const whatYouSaid = document.getElementById("what-you-said");
-let listening = false;
+// const input = document.getElementById("input");
+// const whatYouSaid = document.getElementById("what-you-said");
+const textBox = document.getElementById("text");
+const whatIAmSaying = document.getElementById("what-i-am-saying");
+const bottomBar = document.getElementById("bottom-bar");
+
 const greetings = [
   "halo",
   "coy",
@@ -17,13 +20,16 @@ const greetings = [
   "woi coy",
   "dengerin",
 ];
+
 const responses = [
+  "ada apakah gerangan memanggil saya?",
+  "perihal apa yang membuat panjenengan memanggil saya?",
   "ngapa bang?",
   "iya kenapa?",
   "apa cuy?",
-  "nani deska?",
-  "NGAPA LU BANGSAT!!",
-  "NGAPA LU ANJING!!",
+  // "nani deska?",
+  // "NGAPA LU BANGSAT!!",
+  // "NGAPA LU ANJING!!",
 ];
 
 const SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
@@ -34,10 +40,16 @@ recognition.lang = "id-ID";
 recognition.addEventListener("error", (e) => {
   const error = e.error;
   console.log({ error });
-  if (error === "no-speech") listening = false;
 });
 
-recognition.addEventListener("end", () => recognition.start());
+recognition.addEventListener("end", () => {
+  console.log("recognition ended");
+  bottomBar.classList.remove("listening");
+});
+recognition.addEventListener("start", () => {
+  console.log("recognition started");
+  bottomBar.classList.add("listening");
+});
 
 const synth = window.speechSynthesis;
 
@@ -53,22 +65,21 @@ recognition.addEventListener("result", async (e) => {
 
   updateText(transcript);
   if (e.results[0].isFinal) {
-    updateText("");
+    updateText("...");
+    addText(transcript, "me");
 
-    if (!listening && greetings.includes(transcript.toLowerCase())) {
+    if (greetings.includes(transcript.toLowerCase())) {
       const randomResponse =
         responses[Math.floor(Math.random() * responses.length)];
       speak(randomResponse);
-      setTimeout(() => (listening = true), 1000);
       return;
     }
 
-    if (listening) {
-      listening = false;
-      addText(transcript);
-      executeCommand(transcript);
-    }
+    executeCommand(transcript);
   }
 });
 
-recognition.start();
+document.body.addEventListener("click", () => {
+  speechSynthesis.cancel();
+  recognition.start();
+});
