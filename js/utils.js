@@ -14,7 +14,7 @@ function addText(text, whoIsTalking) {
 }
 
 function updateText(text) {
-  whatIAmSaying.textContent = text;
+  input.value = text;
 }
 
 function speak(text) {
@@ -27,18 +27,23 @@ function speak(text) {
   utterance.onend = () => {
     recognition.start();
     console.log("start recognition and stop speaking");
+
+    // removing the event listener
+    utterance.onstart = () => {};
+    utterance.onend = () => {};
   };
+
   synth.speak(utterance);
 }
 
 function executeCommand(transcript) {
   transcript = transcript.toLowerCase();
-  const matchesCommands = commands.find((cmd) => {
+  const command = commands.find((cmd) => {
     return transcript.startsWith(cmd.command);
   });
-  if (matchesCommands) {
-    const param = transcript.substring(matchesCommands.command.length + 1);
-    matchesCommands.execute(param);
+  if (command) {
+    const param = transcript.substring(command.command.length + 1);
+    command.execute(param);
   }
 }
 
@@ -133,7 +138,7 @@ async function getWeather(city) {
 
     for (const { jamCuaca, cuaca, humidity, tempC } of weathers) {
       const [tanggal, jam] = jamCuaca.split(" ");
-      const kalimat = `Di tanggal ${tanggal.split("-")[2]}, jam ${jam
+      const kalimat = `Tanggal ${tanggal.split("-")[2]}, jam ${jam
         .split(":")[0]
         .replace(
           "00",

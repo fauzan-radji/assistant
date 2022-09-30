@@ -1,8 +1,7 @@
-// const input = document.getElementById("input");
-// const whatYouSaid = document.getElementById("what-you-said");
 const textBox = document.getElementById("text");
-const whatIAmSaying = document.getElementById("what-i-am-saying");
 const bottomBar = document.getElementById("bottom-bar");
+const input = document.getElementById("input");
+const microphoneButton = document.getElementById("microphone");
 
 const greetings = [
   "halo",
@@ -22,11 +21,11 @@ const greetings = [
 ];
 
 const responses = [
-  // "ada apakah gerangan memanggil saya?",
+  "ada apakah gerangan memanggil saya?",
   "perihal apa yang membuat panjenengan memanggil saya?",
-  // "ngapa bang?",
-  // "iya kenapa?",
-  // "apa cuy?",
+  "ngapa bang?",
+  "iya kenapa?",
+  "apa cuy?",
   // "nani deska?",
   // "NGAPA LU BANGSAT!!",
   // "NGAPA LU ANJING!!",
@@ -40,18 +39,34 @@ recognition.lang = "id-ID";
 recognition.addEventListener("error", (e) => {
   const error = e.error;
   console.log({ error });
+  if (error === "network") {
+    speak("Koneksi internet lu ga stabil cuy.");
+    speak("Atau emang lu ga punya kuota.");
+  }
+});
+
+recognition.addEventListener("start", () => {
+  console.log("recognition started");
+  bottomBar.classList.add("listening");
+  microphoneButton.classList.add("listening");
 });
 
 recognition.addEventListener("end", () => {
   console.log("recognition ended");
   bottomBar.classList.remove("listening");
-});
-recognition.addEventListener("start", () => {
-  console.log("recognition started");
-  bottomBar.classList.add("listening");
+  microphoneButton.classList.remove("listening");
 });
 
 const synth = window.speechSynthesis;
+
+microphoneButton.addEventListener("click", () => {
+  if (microphoneButton.classList.contains("listening")) {
+    recognition.stop();
+  } else {
+    speechSynthesis.cancel();
+    recognition.start();
+  }
+});
 
 /* MAIN CODE */
 recognition.addEventListener("result", async (e) => {
@@ -65,7 +80,7 @@ recognition.addEventListener("result", async (e) => {
 
   updateText(transcript);
   if (e.results[0].isFinal) {
-    updateText("...");
+    updateText("");
     addText(transcript, "me");
 
     if (greetings.includes(transcript.toLowerCase())) {
@@ -77,9 +92,4 @@ recognition.addEventListener("result", async (e) => {
 
     executeCommand(transcript);
   }
-});
-
-document.body.addEventListener("click", () => {
-  speechSynthesis.cancel();
-  recognition.start();
 });
